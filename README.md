@@ -3,7 +3,7 @@ LumOpt fork. Original package:
 https://github.com/chriskeraly/LumOpt
 
 This fork modifies the original code as:
-- imports `lumapi` diffrently (preformed by `replace_import.py`)
+- imports `lumapi` diffrently (see `replace_import.py`)
 - updates two methods to be compatible with last version of `matplotlib` 
 
 ## Introduction
