@@ -2,7 +2,7 @@ from lumopt.geometries.geometry import Geometry
 from lumopt.utilities.materials import Material
 from lumopt.lumerical_methods.lumerical_scripts import set_spatial_interp, get_eps_from_sim
 
-import lumapi
+from fdtd.lumerical import lumapi
 import numpy as np
 import scipy as sp
 from scipy.interpolate import RegularGridInterpolator

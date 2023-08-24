@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import scipy as sp
 import random
-import lumapi
+from fdtd.lumerical import lumapi
 from lumopt.geometries.geometry import Geometry
 from lumopt.utilities.edge import Edge
 from lumopt.utilities.materials import Material

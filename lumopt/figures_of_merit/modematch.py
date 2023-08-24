@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import scipy as sp
 import scipy.constants
-import lumapi
+from fdtd.lumerical import lumapi
 
 from lumopt.utilities.wavelengths import Wavelengths
 

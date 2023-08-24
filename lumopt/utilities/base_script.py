@@ -4,8 +4,10 @@
 import os
 from inspect import signature
 
-from lumapi import FDTD
-from lumapi import MODE
+from fdtd.lumerical import lumapi
+FDTD = lumapi.FDTD
+from fdtd.lumerical import lumapi
+MODE = lumapi.MODE
 from lumopt.utilities.load_lumerical_scripts import load_from_lsf
 
 class BaseScript(object):

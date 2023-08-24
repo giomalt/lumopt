@@ -19,13 +19,14 @@ class SnapShots(FileMovieWriter):
         self.fname_format_str = '%s%%d.%s'
         self.temp_prefix, self.frame_format = self.outfile.split('.')
 
-    def grab_frame(self, **fig_kwargs):
-        ''' All keyword arguments in fig_kwargs are passed on to the 'savefig' command that saves the figure. '''
-        with self._frame_sink() as myframesink:
-            self.fig.savefig(myframesink, format = self.frame_format, dpi = self.dpi, **fig_kwargs)
+    # def grab_frame(self, **fig_kwargs):
+    #     ''' All keyword arguments in fig_kwargs are passed on to the 'savefig' command that saves the figure. '''
+    #     with self._frame_sink() as myframesink:
+    #         self.fig.savefig(myframesink, format = self.frame_format, dpi = self.dpi, **fig_kwargs)
 
     def finish(self):
-        self._frame_sink().close()
+        pass
+        # self._frame_sink().close()
 
 class Plotter(object):
     '''

@@ -1,7 +1,7 @@
 """ Copyright chriskeraly
     Copyright (c) 2019 Lumerical Inc. """
 
-import lumapi
+from fdtd.lumerical import lumapi
 
 class Simulation(object):
     """

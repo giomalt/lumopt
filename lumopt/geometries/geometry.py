@@ -3,7 +3,7 @@
 
 import sys
 import numpy as np
-import lumapi
+from fdtd.lumerical import lumapi
 
 class Geometry(object):
 

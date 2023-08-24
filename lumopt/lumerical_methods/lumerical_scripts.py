@@ -4,7 +4,7 @@
 import numpy as np
 import scipy as sp
 import scipy.constants
-import lumapi
+from fdtd.lumerical import lumapi
 from lumopt.utilities.fields import Fields, FieldsNoInterp
 
 def get_fields_on_cad(fdtd, monitor_name, field_result_name, get_eps, get_D, get_H, nointerpolation, unfold_symmetry = True):
