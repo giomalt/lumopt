@@ -1,23 +1,21 @@
 """ Copyright chriskeraly
     Copyright (c) 2019 Lumerical Inc. """
 
-import copy
-import inspect
 import os
 import shutil
-
-import matplotlib.pyplot as plt
+import inspect
+import copy
 import numpy as np
-from lumopt.figures_of_merit.modematch import ModeMatch
-from lumopt.lumerical_methods.lumerical_scripts import get_fields
+import matplotlib.pyplot as plt
+
 from lumopt.utilities.base_script import BaseScript
+from lumopt.utilities.wavelengths import Wavelengths
+from lumopt.utilities.simulation import Simulation
 from lumopt.utilities.fields import FieldsNoInterp
 from lumopt.utilities.gradients import GradientFields
+from lumopt.figures_of_merit.modematch import ModeMatch
 from lumopt.utilities.plotter import Plotter
-from lumopt.utilities.simulation import Simulation
-from lumopt.utilities.tensorboard import Board
-from lumopt.utilities.wavelengths import Wavelengths
-
+from lumopt.lumerical_methods.lumerical_scripts import get_fields
 
 class SuperOptimization(object):
     """
@@ -127,7 +125,6 @@ class Optimization(SuperOptimization):
             print("Accurate interface detection enabled")
 
         self.plotter = None #< Initialize later, when we know how many parameters there are
-        self.board = None # <-- Initialize later, when we know how many parameters there are 
         self.fomHist = []
         self.paramsHist = []
 
@@ -141,27 +138,19 @@ class Optimization(SuperOptimization):
 
     def init_plotter(self):
         if self.plotter is None:
-            self.plotter = Plotter(movie = False, plot_history = self.plot_history)
+            self.plotter = Plotter(movie = True, plot_history = self.plot_history)
         return self.plotter
-
-    def init_board(self, folder=''):
-        if self.board is None:
-            self.board = Board(folder)
-        return self.board
 
     def run(self):
         self.initialize()
 
-        # self.init_plotter() # do not use plotter. Instead, use a web page to show data 
-        # interactively
-        print('working dir = {}'.format(self.workingDir))
-        self.init_board(folder = self.workingDir)
+        self.init_plotter()
         
-        # if self.plotter.movie:
-        #     with self.plotter.writer.saving(self.plotter.fig, "optimization.mp4", 100):
-        #         self.optimizer.run()
-        # else:
-        self.optimizer.run()
+        if self.plotter.movie:
+            with self.plotter.writer.saving(self.plotter.fig, "optimization.mp4", 100):
+                self.optimizer.run()
+        else:
+            self.optimizer.run()
 
         ## For topology optimization we are not done yet ... 
         if hasattr(self.geometry,'progress_continuation'):
@@ -209,34 +198,8 @@ class Optimization(SuperOptimization):
         callable_jac = self.callable_jac
         bounds = np.array(self.geometry.bounds)
 
-        # def plotting_function():
-        #     self.plotter.update(self)
-            
-        #     if hasattr(self.geometry,'to_file'):
-        #         self.geometry.to_file('parameters_{}.npz'.format(self.optimizer.iteration))
-
-        #     with open('convergence_report.txt','a') as f:
-        #         f.write('{}, {}'.format(self.optimizer.iteration,self.optimizer.fom_hist[-1]))
-        #         if hasattr(self.geometry,'write_status'):
-        #             self.geometry.write_status(f) 
-        #         f.write('\n')
-
-        def plotting_tensobard_function():
-            """
-            Send
-            - current iteration
-            - figure of merit
-            - optimization parameters
-            - gradients
-            to TensorBoard to plot them.
-
-            Also, save the current parameters to a file and write the current iteration and figure 
-            of merit to a file.
-            """
-            self.board.log_data(self.optimizer.iteration,
-                               self.optimizer.fom_hist,
-                               self.optimizer.params_hist,
-                               self.optimizer.gradients_hist)
+        def plotting_function():
+            self.plotter.update(self)
             
             if hasattr(self.geometry,'to_file'):
                 self.geometry.to_file('parameters_{}.npz'.format(self.optimizer.iteration))
@@ -247,8 +210,10 @@ class Optimization(SuperOptimization):
                     self.geometry.write_status(f) 
                 f.write('\n')
 
+
         self.fom.initialize(self.sim)
-        self.optimizer.initialize(start_params = start_params, callable_fom = callable_fom, callable_jac = callable_jac, bounds = bounds, plotting_function = plotting_tensobard_function)
+
+        self.optimizer.initialize(start_params = start_params, callable_fom = callable_fom, callable_jac = callable_jac, bounds = bounds, plotting_function = plotting_function)
       
 
     def make_forward_sim(self, params):
