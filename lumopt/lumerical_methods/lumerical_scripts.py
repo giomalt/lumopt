@@ -7,9 +7,13 @@ import scipy.constants
 from fdtd.lumerical import lumapi
 from lumopt.utilities.fields import Fields, FieldsNoInterp
 
+
 def get_fields_on_cad(fdtd, monitor_name, field_result_name, get_eps, get_D, get_H, nointerpolation, unfold_symmetry = True):
     unfold_symmetry_string = "true" if unfold_symmetry else "false"
-    fdtd.eval("options=struct; options.unfold={0};".format(unfold_symmetry_string) + 
+    # fdtd.eval("options=struct; options.unfold={0};".format(unfold_symmetry_string) + 
+    #           "{0} = struct;".format(field_result_name) +
+    #           "{0}.E = getresult('{1}','E',options);".format(field_result_name, monitor_name))
+    fdtd.eval("options=struct;".format(unfold_symmetry_string) + 
               "{0} = struct;".format(field_result_name) +
               "{0}.E = getresult('{1}','E',options);".format(field_result_name, monitor_name))
 
@@ -71,17 +75,31 @@ def set_spatial_interp(fdtd,monitor_name,setting):
 def get_eps_from_sim(fdtd, monitor_name = 'opt_fields', unfold_symmetry = True):
     index_monitor_name = monitor_name + '_index'
 
-    unfold_symmetry_string = "true" if unfold_symmetry else "false"
-    fdtd.eval(('options=struct; options.unfold={0};'
-               '{1}_result = getresult("{1}","index",options);'
-               '{1}_eps_x = ({1}_result.index_x)^2;'
-               '{1}_eps_y = ({1}_result.index_y)^2;'
-               '{1}_eps_z = ({1}_result.index_z)^2;'
-               '{1}_x = {1}_result.x;'
-               '{1}_y = {1}_result.y;'
-               '{1}_z = {1}_result.z;'
-               '{1}_lambda = {1}_result.lambda;'
-               ).format(unfold_symmetry_string, index_monitor_name))
+    # "unfold" is True by default in Lumerical getresult. 'options.unfold' is decprecated.
+    
+    # unfold_symmetry_string = "true" if unfold_symmetry else "false"
+    # fdtd.eval(('options=struct; options.unfold={0};'
+    #            '{1}_result = getresult("{1}","index",options);'
+    #            '{1}_eps_x = ({1}_result.index_x)^2;'
+    #            '{1}_eps_y = ({1}_result.index_y)^2;'
+    #            '{1}_eps_z = ({1}_result.index_z)^2;'
+    #            '{1}_x = {1}_result.x;'
+    #            '{1}_y = {1}_result.y;'
+    #            '{1}_z = {1}_result.z;'
+    #            '{1}_lambda = {1}_result.lambda;'
+    #            ).format(unfold_symmetry_string, index_monitor_name))
+
+    fdtd.eval(('options=struct;'
+            '{0}_result = getresult("{0}","index",options);'
+            '{0}_eps_x = ({0}_result.index_x)^2;'
+            '{0}_eps_y = ({0}_result.index_y)^2;'
+            '{0}_eps_z = ({0}_result.index_z)^2;'
+            '{0}_x = {0}_result.x;'
+            '{0}_y = {0}_result.y;'
+            '{0}_z = {0}_result.z;'
+            '{0}_lambda = {0}_result.lambda;'
+            ).format(index_monitor_name))
+
     fields_eps_x = fdtd.getv('{0}_eps_x'.format(index_monitor_name))    # np.power(index_dict['index_x'], 2)
     fields_eps_y = fdtd.getv('{0}_eps_y'.format(index_monitor_name))    # np.power(index_dict['index_y'], 2)
     fields_eps_z = fdtd.getv('{0}_eps_z'.format(index_monitor_name))    # np.power(index_dict['index_z'], 2)

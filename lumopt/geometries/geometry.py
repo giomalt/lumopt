@@ -1,9 +1,12 @@
 """ Copyright chriskeraly
     Copyright (c) 2019 Lumerical Inc. """
 
+import os
 import sys
+
 import numpy as np
 from fdtd.lumerical import lumapi
+
 
 class Geometry(object):
 
@@ -87,7 +90,9 @@ class Geometry(object):
                   "clear({0}_data_set);".format(index_monitor_name))
 
     def d_eps_on_cad(self, sim):
+        # os.system('pause')
         Geometry.get_eps_from_index_monitor(sim.fdtd, 'original_eps_data')
+        # os.system('pause')
         current_params = self.get_current_params()
         sim.fdtd.eval("d_epses = cell({});".format(current_params.size))
         lumapi.putDouble(sim.fdtd.handle, "dx", self.dx)
@@ -98,6 +103,7 @@ class Geometry(object):
             d_params[i] = param + self.dx
             self.add_geo(sim, d_params, only_update = True)
             Geometry.get_eps_from_index_monitor(sim.fdtd, 'current_eps_data')
+            # os.system('pause')
             sim.fdtd.eval("d_epses{"+str(i+1)+"} = (current_eps_data - original_eps_data) / dx;")
             sys.stdout.write('.'), sys.stdout.flush()
         sim.fdtd.eval("clear(original_eps_data, current_eps_data, dx);")

@@ -1,12 +1,13 @@
 """ Copyright chriskeraly
     Copyright (c) 2019 Lumerical Inc. """
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 import scipy.constants
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 from fdtd.lumerical import lumapi
+
 
 class GradientFields(object):
     """ Combines the forward and adjoint fields (collected by the constructor) to generate the integral used

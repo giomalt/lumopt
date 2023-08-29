@@ -2,11 +2,11 @@
     Copyright (c) 2019 Lumerical Inc. """
 
 import sys
+
 import numpy as np
 import scipy as sp
 import scipy.constants
 from fdtd.lumerical import lumapi
-
 from lumopt.utilities.wavelengths import Wavelengths
 
 """ Helper function to determine if a variable can be converted to an integer """
@@ -16,6 +16,22 @@ def is_int(x):
         return True
     except ValueError:
         return False
+    
+
+def increase_n_init(sim, name: str, n_init: int = 10):
+    """
+    Increase n_init of a mode expansion monitor or source
+    
+    Args:
+        sim (lumapi.FDTD or lumapi.MODE): Lumerical session (FDTD or MODE)
+        name (str): name of the mode expansion monitor or source
+        n_init (int): new value of n_init
+    """
+    sim.fdtd.setnamed(name, "mode selection", "user select")
+    sim.fdtd.seteigensolver('use max index', False)
+    sim.fdtd.seteigensolver('n', n_init)
+
+
 class ModeMatch(object):
 
     """ Calculates the figure of merit from an overlap integral between the fields recorded by a field monitor and the slected mode.
@@ -112,7 +128,6 @@ class ModeMatch(object):
         if min(abs(grid-monitor_pos)) > tol:
             print('WARNING: The monitor "{}" is not aligned with the grid. This can introduce small phase errors which sometimes result in inaccurate gradients.'.format(self.monitor_name))
 
-
     @staticmethod
     def add_mode_expansion_monitor(sim, monitor_name, mode_expansion_monitor_name, mode):
         # modify existing DFT monitor
@@ -137,6 +152,8 @@ class ModeMatch(object):
                 prop_val = sim.fdtd.getnamed(monitor_name, prop_name)
                 sim.fdtd.setnamed(mode_expansion_monitor_name, prop_name, prop_val)
             
+            # increase n_init max guess to find slot mode
+            increase_n_init(sim, mode_expansion_monitor_name, n_init = 10)
             # select mode
             sim.fdtd.select(mode_expansion_monitor_name)
            
@@ -255,6 +272,9 @@ class ModeMatch(object):
             if multi_freq_src:
                 sim.fdtd.setnamed(source_name, 'frequency points', sim.fdtd.getglobalmonitor('frequency points'))
         
+        if direction == 'Backward': # mode source calculated in slot, so we need to increase n_init
+            increase_n_init(sim, source_name, n_init = 10)
+
         if is_int(mode):
             sim.fdtd.setnamed(source_name, 'mode selection', 'user select')
             sim.fdtd.select(source_name)

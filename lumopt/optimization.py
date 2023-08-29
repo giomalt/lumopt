@@ -237,7 +237,13 @@ class Optimization(SuperOptimization):
                                self.optimizer.fom_hist,
                                self.optimizer.params_hist,
                                self.optimizer.gradients_hist)
-            
+                    
+            self.board.log_data2d(self.geometry.points,
+                                  self.gradient_fields)
+
+            # TODO: case in which there are more than 1 optimizations, i.e.
+            # if hasattr(optimization, 'optimizations'):
+
             if hasattr(self.geometry,'to_file'):
                 self.geometry.to_file('parameters_{}.npz'.format(self.optimizer.iteration))
 
@@ -444,7 +450,7 @@ class Optimization(SuperOptimization):
     @staticmethod
     def set_global_wavelength(sim, wavelengths):
         sim.fdtd.setglobalmonitor('use source limits', True)
-        sim.fdtd.setglobalmonitor('use linear wavelength spacing', True)
+        sim.fdtd.setglobalmonitor('use wavelength spacing', True)
         sim.fdtd.setglobalmonitor('frequency points', len(wavelengths))
         sim.fdtd.setglobalsource('set wavelength', True)
         sim.fdtd.setglobalsource('wavelength start', wavelengths.min())

@@ -1,12 +1,10 @@
 # Continuous adjoint optimization wrapper for Lumerical
-Fork of LumOpt. 
-
-Original package:
+LumOpt fork. Original package:
 https://github.com/chriskeraly/LumOpt
 
-This fork modifies the original code:
-- import `lumapi` diffrently (see `replace_import.py`)
-- update two methods to be compatible with last version of `matplotlib` 
+This fork modifies the original code as:
+- imports `lumapi` diffrently (see `replace_import.py`)
+- updates two methods to be compatible with last version of `matplotlib` 
 
 ## Introduction
 
@@ -20,19 +18,16 @@ If you use this tool in any published work, please cite https://www.osapublishin
 It is all here: https://lumopt.readthedocs.io/en/latest/
 
 ## Download and install
-Download the modified LumOpt package from my GitHub repository:
+Move to package folder of main repo
+`cd .\packages\`
 
+Download the modified LumOpt package from my GitHub repository
 `git submodule add https://github.com/giomalt/lumopt.git packages/LumOpt`
 
-Move to LumOpt folder and install it:
-
-`cd .\packages\LumOpt\`
-
+Install it via
 `python setup.py develop`
 
 ## Check that it works:
 Run an example:
-
 `cd examples/Ysplitter`
-
 `python splitter_opt_2D.py`

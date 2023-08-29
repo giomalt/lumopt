@@ -2,9 +2,10 @@
     Copyright (c) 2019 Lumerical Inc. """
 
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 import matplotlib.animation
+import matplotlib.pyplot as plt
 from matplotlib.animation import FileMovieWriter
+
 
 class SnapShots(FileMovieWriter):
     ''' Grabs the image information from the figure and saves it as a movie frame. '''
